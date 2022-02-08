@@ -12,6 +12,9 @@ namespace Pdf.Api.External
         [Post("/v1/pdf/convert/from/url")]
         Task<ConvertResponseDto> ConvertWebPageFromSource([Body] ConvertFromWebPageRequestDto request);
 
+        [Post("/v1/pdf/translate")]
+        Task<ConvertResponseDto> Translate([Body] TranslateRequestDto request);
+
         [Get("/v1/job/check")]
         Task<CheckJobStatusResponseDto> CheckJob([Query, AliasAs("jobId")] string jobId);
     }

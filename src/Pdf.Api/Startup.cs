@@ -104,6 +104,7 @@ namespace Pdf.Api
 
             services.AddTransient<IEmailToPdfConvertService, EmailToPdfConvertService>();
             services.AddTransient<IWebPageToPdfConvertService, WebPageToPdfConvertService>();
+            services.AddTransient<ITranslatePdfService, TranslatePdfService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
