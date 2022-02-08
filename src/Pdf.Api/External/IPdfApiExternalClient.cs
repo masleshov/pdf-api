@@ -7,7 +7,10 @@ namespace Pdf.Api.External
     internal interface IPdfApiExternalClient
     {
         [Post("/v1/pdf/convert/from/email")]
-        Task<ConvertFromEmailResponseDto> ConvertEmailMessageFromSource([Body] ConvertFromEmailRequestDto request);
+        Task<ConvertResponseDto> ConvertEmailMessageFromSource([Body] ConvertFromEmailRequestDto request);
+
+        [Post("/v1/pdf/convert/from/url")]
+        Task<ConvertResponseDto> ConvertWebPageFromSource([Body] ConvertFromWebPageRequestDto request);
 
         [Get("/v1/job/check")]
         Task<CheckJobStatusResponseDto> CheckJob([Query, AliasAs("jobId")] string jobId);

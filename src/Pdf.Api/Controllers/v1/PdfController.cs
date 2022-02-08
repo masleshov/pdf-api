@@ -15,10 +15,15 @@ namespace Pdf.Api.Controllers.v1
     public sealed class PdfController : ControllerBase
     {
         private readonly IEmailToPdfConvertService _emailToPdfConvertService;
+        private readonly IWebPageToPdfConvertService _webPageToPdfConvertService;
 
-        public PdfController(IEmailToPdfConvertService emailToPdfConvertService)
+        public PdfController(
+            IEmailToPdfConvertService emailToPdfConvertService,
+            IWebPageToPdfConvertService webPageToPdfConvertService
+        )
         {
             _emailToPdfConvertService = emailToPdfConvertService;
+            _webPageToPdfConvertService = webPageToPdfConvertService;
         }
         
         [Authorize]
@@ -26,6 +31,13 @@ namespace Pdf.Api.Controllers.v1
         public async Task<string> EmailToPdfFromSource([FromBody, Required] EmailToPdfFromSourceRequestDto request)
         {
             return await _emailToPdfConvertService.Convert(request.SourceFileUrl, request.OutputFileName);
+        }
+
+        [Authorize]
+        [HttpPost("from-web-page")]
+        public async Task<string> WebPageToPdfFromSource([FromBody, Required] WebPageToPdfFromSourceRequestDto request)
+        {
+            return await _webPageToPdfConvertService.Convert(request.WebPageUrl);
         }
     }
 }

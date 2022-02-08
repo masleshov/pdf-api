@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Pdf.Api.External.Dto
 {
-    internal sealed record ConvertFromEmailResponseDto
+    internal sealed record ConvertResponseDto
     {
         [JsonPropertyName("jobId")]
         public string JobId { get; init; }
