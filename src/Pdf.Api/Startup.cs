@@ -8,8 +8,11 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Http.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Pdf.Api.Configuration;
+using Pdf.Api.External;
 using Pdf.Api.Infrastructure;
 using Pdf.Api.Infrastructure.Constant;
 using Pdf.Api.Service;
@@ -77,15 +80,29 @@ namespace Pdf.Api
                 .AddScheme<JwtAuthenticationOptions, JwtAuthenticationHandler>(JwtBearerDefaults.AuthenticationScheme, null);
             services.AddAuthorization();
 
+            services.AddScoped(sp => new LoggingHttpMessageHandler(sp.GetRequiredService<ILogger<LoggingHttpMessageHandler>>()));
+
             services.Configure<NpgsqlDatabaseConfiguration>(Configuration.GetSection("NpgsqlDatabase"));
             services.Configure<EmailConfirmationConfiguration>(Configuration.GetSection("EmailConfirmation"));
             services.Configure<SmtpConfiguration>(Configuration.GetSection("Smtp"));
+            
+            var pdfApiSection = Configuration.GetSection("PdfApi");
+            var pdfApiConfiguration = pdfApiSection.Get<PdfApiConfiguration>();
+
+            services.Configure<PdfApiConfiguration>(pdfApiSection);
+
+            services.AddTransient<PdfApiHttpHandler>();
+            services.AddRefitClient<IPdfApiExternalClient>(new Uri(pdfApiConfiguration.Uri))
+                .AddHttpMessageHandler<PdfApiHttpHandler>();
 
             services.AddTransient<UnitOfWork>();
+            services.AddSingleton<JobStatusChecker>();
 
             services.AddTransient<ILoginService, LoginService>();
             services.AddTransient<IAuthorizationInfoService, AuthorizationInfoService>();
             services.AddTransient<IEmailConfirmationService, EmailConfirmationService>();
+
+            services.AddTransient<IEmailToPdfConvertService, EmailToPdfConvertService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
