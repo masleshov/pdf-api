@@ -1,3 +1,5 @@
+create database "pdf-api";
+
 create extension if not exists "uuid-ossp";
 
 create table customer
