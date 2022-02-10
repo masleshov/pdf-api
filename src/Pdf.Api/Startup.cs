@@ -85,6 +85,7 @@ namespace Pdf.Api
             services.Configure<NpgsqlDatabaseConfiguration>(Configuration.GetSection("NpgsqlDatabase"));
             services.Configure<EmailConfirmationConfiguration>(Configuration.GetSection("EmailConfirmation"));
             services.Configure<SmtpConfiguration>(Configuration.GetSection("Smtp"));
+            services.Configure<RequestThrottlingConfiguration>(Configuration.GetSection("RequestThrottling"));
             
             var pdfApiSection = Configuration.GetSection("PdfApi");
             var pdfApiConfiguration = pdfApiSection.Get<PdfApiConfiguration>();
@@ -123,6 +124,7 @@ namespace Pdf.Api
                 .AllowCredentials());
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<RequestThrottlingMiddleware>();
             app.UseExceptionHandler(builder => builder.UseResponseExceptionHandler(env));
             app.UseWebSockets();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
