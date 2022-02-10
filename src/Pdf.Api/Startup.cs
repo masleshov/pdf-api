@@ -4,6 +4,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -106,6 +107,14 @@ namespace Pdf.Api
             services.AddTransient<IEmailToPdfConvertService, EmailToPdfConvertService>();
             services.AddTransient<IWebPageToPdfConvertService, WebPageToPdfConvertService>();
             services.AddTransient<ITranslatePdfService, TranslatePdfService>();
+
+            services.AddHttpLogging(logging =>
+            {
+                logging.LoggingFields = HttpLoggingFields.All;
+                logging.RequestBodyLogLimit = 4096;
+                logging.ResponseBodyLogLimit = 4096;
+
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -115,6 +124,7 @@ namespace Pdf.Api
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pdf API"));
 
+            app.UseHttpLogging();
             app.UseApiVersioning();
             app.UseRouting();
             app.UseCors(x => x
